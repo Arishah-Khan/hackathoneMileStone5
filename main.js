@@ -23,7 +23,7 @@ function addMoreEducation() {
     educationField.innerHTML = `
         <input type="text" class="degree" placeholder="Degree (e.g., B.Sc. Computer Science)" required>
         <input type="text" class="institution" placeholder="Institution (e.g., XYZ University)" required>
-        <input type="text" class="gradeYear" placeholder="Graduation Year (e.g., 2024)" required>
+        <input type="number" class="gradeYear" placeholder="Graduation Year (e.g., 2024)" required>
     `;
     educationContainer.appendChild(educationField);
 }
@@ -36,7 +36,7 @@ function addMoreExperience() {
     
         <input type="text" class="company" placeholder="Company Name (e.g., ABC Crop)" required>
         <input type="text" class="role" placeholder="Role/Position (e.g., Software Developer)" required>
-        <input type="text" class="experienceYears" placeholder="Years Worked (e.g., 2019-2022)" required>
+        <input type="number" class="experienceYears" placeholder="Years Worked (e.g., 2019-2022)" required>
     `;
     experienceContainer.appendChild(experienceField);
 }
@@ -73,7 +73,7 @@ function updateExperienceDisplay() {
                 <label for="role">Role/Position:</label>
                 <input type="text" class="role" value="${exp.role}" placeholder="Role/Position (e.g., Software Developer)" required>
                 <label for="experienceYears">Years Worked:</label>
-                <input type="text" class="experienceYears"  value="${exp.experienceYears}" placeholder="Years Worked (e.g., 2019-2022)" required>
+                <input type="number" class="experienceYears"  value="${exp.experienceYears}" placeholder="Years Worked (e.g., 2019-2022)" required>
             </div>
 
 
@@ -108,7 +108,7 @@ function updateEducationDisplay() {
                 <label for="institution">Institution:</label>
                 <input type="text" class="institution" value="${item.institution}" placeholder="Institution (e.g., XYZ University)" required>
                 <label for="gradYear">Graduation Year:</label>
-                <input type="text" class="gradeYear" value="${item.gradeYear}" placeholder="Graduation Year (e.g., 2024)" required>
+                <input type="number" class="gradeYear" value="${item.gradeYear}" placeholder="Graduation Year (e.g., 2024)" required>
             </div>`).join('');
 }
 // Function to collect contact details
@@ -138,15 +138,13 @@ function handleFileInputChange(event) {
 // Attach event listener to the file input
 const profileImageInput = document.getElementById("profileImage");
 profileImageInput?.addEventListener("change", handleFileInputChange);
-let sanitizedUsername = '';
+let sanitizedUsername = "";
 function generatedResume(event) {
     event.preventDefault();
-    // Collect form values
     const profileImage = document.getElementById("profileImagePreview").src;
-    const name = document.getElementById("name").value;
+    const username = document.getElementById("name").value; // Now updating username here
     const subheading = document.getElementById("subheading").value;
     const profileSummary = document.getElementById("profileSummary").value;
-    sanitizedUsername = name.trim().replace(/\s+/g, "_").replace(/[^a-zA-Z0-9_]/g, "");
     const skills = collectSkills();
     const education = collectEducation();
     const experience = collectExperience();
@@ -157,49 +155,59 @@ function generatedResume(event) {
             <h1 class="resume changeBg">Resume</h1>
             ${profileImage ? `<div class="resume"><img src="${profileImage}" alt="Profile Image" style="max-width: 200px; height: auto; border-radius: 50%; margin-bottom: 20px;" class="img"></div>` : ''}
             <div class="bgColor">
-                <h3 class="javaName">${name}</h3>
+                <h3 class="javaName">${username}</h3>
                 <h5 class="sub">${subheading}</h5>
             </div>
             <h4>Profile Summary</h4>
             <p class="profile">${profileSummary}</p>
             <h4>Skills</h4>
-           <p class="profile">${skills.map(skill => skill.skillName).join('<br>')}</p>
+            <p class="profile">${skills.map(skill => skill.skillName).join('<br>')}</p>
 
             <h4>Education</h4>
             <p class="profile">${education.map(item => `${item.degree} from ${item.institution} in (${item.gradeYear})`).join('<br>')}</p>
             <h4>Work Experience</h4>
-           <p class="profile">
-  <p class="profile">
-    <p class="profile">
-    ${experience.map(exp => `I was employed at ${exp.company} as a ${exp.role} during ${exp.experienceYears}.`).join('<br>')}
-</p>
-           
-    
+            <p class="profile">
+                ${experience.map(exp => `I was employed at ${exp.company} as a ${exp.role} during ${exp.experienceYears}.`).join('<br>')}
+            </p>
+
             <h4>Contact Information</h4>
             <p class="profile"><strong>Email:</strong> ${contact.email}</p>
             <p class="profile"><strong>Phone Number:</strong> ${contact.phone}</p>
             <p class="profile"><strong>LinkedIn:</strong> <a href="${contact.linkedin}" target="_blank">${contact.linkedin}</a></p>
             <p class="profile"><strong>GitHub:</strong> <a href="${contact.github}" target="_blank">${contact.github}</a></p>
             <p class="profile"><strong>Website:</strong> <a href="${contact.website}" target="_blank">${contact.website}</a></p>
+
+           <p class="anchor"> <a id="shareLink" href="#" target="_blank"></a></p>
             <div class="editBtn">
-            <button class="editResume" onclick="editResume()"><i class="fa-solid fa-pen-to-square"></i> Edit Resume</button>
+                <button class="editResume" onclick="editResume()"><i class="fa-solid fa-pen-to-square"></i> Edit Resume</button>
             </div>
-              <div class="action-buttons">
-                <button class="downloadResume" onclick="downloadResume()"><i class="fa-solid fa-cloud-arrow-down"></i> Download Resume</button>
-                <button class="shareResume" onclick="shareResume()"><i class="fa-solid fa-share"></i> Share Resume</button>
-            </div>
+            <div class="action-buttons">
+                <button class="downloadResume" id="downloadBtn" onclick="downloadResume()"><i class="fa-solid fa-cloud-arrow-down"></i> Download Resume</button>
+                <button class="shareResume" id="copyLink" onclick="shareResume()"><i class="fa-solid fa-share"></i> Share Resume</button>
             </div>
         </div>
-
     `;
-    // Hide the form and show the resume output
+    sanitizedUsername = username.replace(/\s+/g, '_').toLowerCase();
+    let shareLink = document.getElementById("shareLink");
+    const baseURL = window.location.href.split('?')[0];
+    const uniqueURL = `${baseURL}?username=${encodeURIComponent(username)}`;
+    shareLink.href = uniqueURL;
+    shareLink.textContent = uniqueURL;
     document.getElementById("resumeForm").style.display = 'none';
     resumeOutput.style.display = 'block';
-    // Change "Generate Resume" button to "Save Resume"
     const generateButton = document.querySelector("button[type='submit']");
     if (generateButton) {
         generateButton.textContent = 'Save Resume';
     }
+}
+function shareResume() {
+    const shareLink = document.getElementById("shareLink");
+    const copyText = shareLink.href;
+    navigator.clipboard.writeText(copyText).then(() => {
+        alert("Link copied successfully to clipboard");
+    }, function () {
+        alert("Sorry! Failed to copy link to clipboard");
+    });
 }
 // Attach event listener to the form
 const resumeForm = document.getElementById("resumeForm");
@@ -234,20 +242,4 @@ function downloadResume() {
     document.body.appendChild(downloadLink);
     downloadLink.click();
     document.body.removeChild(downloadLink);
-}
-function shareResume() {
-    const shareURL = `https://yourdomain.com/resumes/${sanitizedUsername}_resume.html`;
-    const shareData = {
-        title: 'My Resume',
-        text: 'Check out my resume',
-        url: shareURL
-    };
-    if (navigator.share) {
-        navigator.share(shareData)
-            .then(() => console.log('Resume shared successfully!'))
-            .catch((error) => console.error('Error sharing resume:', error));
-    }
-    else {
-        alert('Sharing is not supported on this device.');
-    }
 }
