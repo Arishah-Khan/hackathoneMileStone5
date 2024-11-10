@@ -37,6 +37,11 @@ h1, h2, h3, h4, h5, h6 {
     border: 2 px solid #464543;
   
   }
+  button:active{
+    color: #333; 
+    background-color: whitesmoke; 
+    border: 2 px solid #464543;
+  }
   h1 {
     text-align: center;
     margin: 30px 0;
