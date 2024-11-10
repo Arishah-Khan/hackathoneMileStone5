@@ -304,13 +304,10 @@ function generatedResume(event) {
     <button class="shareResume" id="copyLink" onclick="shareResume()"><i class="fa-solid fa-share"></i> Share Resume</button>
   </div>
 `;
-        // Append the action buttons after the resume content
         if (resumeOutput) {
             resumeOutput.innerHTML += actionButtons;
         }
-        // Handle share link generation
         if (username) {
-            const sanitizedUsername = username.replace(/\s+/g, '_').toLowerCase();
             const shareLink = document.getElementById("shareLink");
             const baseURL = window.location.href.split('?')[0];
             const uniqueURL = `${baseURL}?username=${encodeURIComponent(username)}`;
@@ -377,33 +374,39 @@ function downloadResume() {
     })
         .join(' ');
     const hideButtonsCSS = `
-        .action-buttons, .editBtn, .anchor {
-            display: none !important;
-        }
+      .action-buttons, .editBtn, .anchor {
+          display: none !important;
+      }
 
-        .container {
-            width: 1000px; 
-            margin: 0 auto; 
-            padding: 20px;
-            border: 1px solid #ddd; 
-        }
+      .container {
+          width: 1000px; 
+          margin: 0 auto; 
+          padding: 20px;
+          border: 1px solid #ddd; 
+      }
 
-        body {
-            font-size: 12px; 
-            line-height: 1.5;
-        }
-    `;
+      body, .container {
+          font-size: 20px; 
+          line-height: 1.5;
+      }
+
+      @media (max-width:480px){
+          body, .container {
+              font-size: 16px !important;
+          }
+      }
+  `;
     const fullHTML = `
-        <html>
-            <head>
-                <style>${styleSheets}</style>
-                <style>${hideButtonsCSS}</style>
-            </head>
-            <body>
-                <div class="container">${resumeHTML}</div>
-            </body>
-        </html>
-    `;
+      <html>
+          <head>
+              <style>${styleSheets}</style>
+              <style>${hideButtonsCSS}</style>
+          </head>
+          <body>
+              <div class="container">${resumeHTML}</div>
+          </body>
+      </html>
+  `;
     const blob = new Blob([fullHTML], { type: 'text/html' });
     const sanitizedUsername = document.getElementById("name")?.value.replace(/\s+/g, '_').toLowerCase() || "resume";
     const downloadLink = document.createElement('a');

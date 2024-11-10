@@ -360,14 +360,11 @@ function generatedResume(event: Event): void {
   </div>
 `;
 
-        // Append the action buttons after the resume content
         if (resumeOutput) {
             resumeOutput.innerHTML += actionButtons;
         }
 
-        // Handle share link generation
         if (username) {
-            const sanitizedUsername = username.replace(/\s+/g, '_').toLowerCase();
             const shareLink = document.getElementById("shareLink") as HTMLAnchorElement;
 
             const baseURL = window.location.href.split('?')[0];
@@ -425,73 +422,74 @@ function editResume(): void {
     updateExperienceDisplay();
 }
 
-
 function downloadResume(): void {
-    const resumeOutput = document.getElementById("resumeOutput") as HTMLDivElement;
-    if (!resumeOutput) {
-        console.error("Resume output not found");
-        return;
-    }
+  const resumeOutput = document.getElementById("resumeOutput") as HTMLDivElement;
+  if (!resumeOutput) {
+      console.error("Resume output not found");
+      return;
+  }
 
-    const resumeHTML = resumeOutput.innerHTML;
+  const resumeHTML = resumeOutput.innerHTML;
 
-    const styleSheets = Array.from(document.styleSheets)
-        .map((sheet) => {
-            try {
-                if (sheet instanceof CSSStyleSheet) {
-                    return Array.from(sheet.cssRules).map(rule => rule.cssText).join(' ');
-                }
-            } catch (error) {
-                console.warn("Could not access stylesheet rules:", error);
-            }
-            return '';
-        })
-        .join(' ');
+  const styleSheets = Array.from(document.styleSheets)
+      .map((sheet) => {
+          try {
+              if (sheet instanceof CSSStyleSheet) {
+                  return Array.from(sheet.cssRules).map(rule => rule.cssText).join(' ');
+              }
+          } catch (error) {
+              console.warn("Could not access stylesheet rules:", error);
+          }
+          return '';
+      })
+      .join(' ');
 
-    const hideButtonsCSS = `
-        .action-buttons, .editBtn, .anchor {
-            display: none !important;
-        }
+  const hideButtonsCSS = `
+      .action-buttons, .editBtn, .anchor {
+          display: none !important;
+      }
 
-        .container {
-            width: 1000px; 
-            margin: 0 auto; 
-            padding: 20px;
-            border: 1px solid #ddd; 
-        }
+      .container {
+          width: 1000px; 
+          margin: 0 auto; 
+          padding: 20px;
+          border: 1px solid #ddd; 
+      }
 
-        body {
-            font-size: 12px; 
-            line-height: 1.5;
-        }
-    `;
+      body, .container {
+          font-size: 20px; 
+          line-height: 1.5;
+      }
 
-    const fullHTML = `
-        <html>
-            <head>
-                <style>${styleSheets}</style>
-                <style>${hideButtonsCSS}</style>
-            </head>
-            <body>
-                <div class="container">${resumeHTML}</div>
-            </body>
-        </html>
-    `;
+      @media (max-width:480px){
+          body, .container {
+              font-size: 16px !important;
+          }
+      }
+  `;
 
-    const blob = new Blob([fullHTML], { type: 'text/html' });
+  const fullHTML = `
+      <html>
+          <head>
+              <style>${styleSheets}</style>
+              <style>${hideButtonsCSS}</style>
+          </head>
+          <body>
+              <div class="container">${resumeHTML}</div>
+          </body>
+      </html>
+  `;
 
-    const sanitizedUsername = (document.getElementById("name") as HTMLInputElement)?.value.replace(/\s+/g, '_').toLowerCase() || "resume";
-    const downloadLink = document.createElement('a');
-    downloadLink.href = URL.createObjectURL(blob);
-    downloadLink.download = `${sanitizedUsername}_resume.html`;
+  const blob = new Blob([fullHTML], { type: 'text/html' });
 
-    document.body.appendChild(downloadLink);
-    downloadLink.click();
-    document.body.removeChild(downloadLink);
+  const sanitizedUsername = (document.getElementById("name") as HTMLInputElement)?.value.replace(/\s+/g, '_').toLowerCase() || "resume";
+  const downloadLink = document.createElement('a');
+  downloadLink.href = URL.createObjectURL(blob);
+  downloadLink.download = `${sanitizedUsername}_resume.html`;
 
-    URL.revokeObjectURL(downloadLink.href);
+  document.body.appendChild(downloadLink);
+  downloadLink.click();
+  document.body.removeChild(downloadLink);
+
+  URL.revokeObjectURL(downloadLink.href);
 }
-
-
-
-
